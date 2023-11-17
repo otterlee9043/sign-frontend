@@ -5,6 +5,7 @@ import { axiosInstance, authApiInstance } from "../utils/api";
 import Logo from "../logo_big.svg";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import styles from "./Login.module.css";
+import { getMember } from "../utils/api";
 import { extractToken } from "../utils/tokenUtils";
 
 
@@ -13,39 +14,21 @@ function Login() {
   const [password, setPassword] = useState("");
   const [errorMsg, setMessage] = useState("");
   const navigate = useNavigate();
-  const { currentUser, setCurrentUser } = useContext(CurrentUserContext);
+  const { setCurrentUser } = useContext(CurrentUserContext);
 
   const handleClick = async () => {
     try {
-      const response = await axiosInstance.post("/member/login", {
+      const response = await axiosInstance.post("/login", {
         email: email,
         password: password,
       });
       const headers = response.headers;
-      setCurrentUser((currentUser) => ({ 
-        ...currentUser, 
-        accessToken: extractToken(headers["authorization"]) 
-      }));
-      getUser().then(() => {
+      const accessToken = extractToken(headers["authorization"]) 
+      getMember(accessToken, setCurrentUser).then(() => {
         navigate("/home");
       });
     } catch (error) {
       setMessage(error.response.data);
-    }
-  };
-
-  const getUser = async () => {
-    try {
-      const response = await authApiInstance.get("/member",
-      {
-        headers: {
-          Authorization: `Bearer ${currentUser.accessToken}`
-        }
-      });
-      const userInfo = response.data;
-      setCurrentUser(userInfo);
-    } catch (error) {
-      console.error("There has been an error getUser", error);
     }
   };
 

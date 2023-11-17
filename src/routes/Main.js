@@ -4,19 +4,34 @@ import { useNavigate } from "react-router-dom";
 import NavLinkButton from "../components/NavLinkButton";
 
 import Logo from "../logo_big.svg";
+import { apiInstance, authApiInstance } from "../utils/api";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import { extractToken } from "../utils/tokenUtils";
+import { getMember } from "../utils/api";
 import styles from "./Main.module.css";
 
 
 function Main() {
-  const { currentUser } = useContext(CurrentUserContext);
+  const { setCurrentUser } = useContext(CurrentUserContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (currentUser) {
-      navigate("/home");
+    const checkLoggedIn = async () => {
+      try {
+        const response = await apiInstance.post('/refresh/access-token');
+        if (response.data === "") {  
+          const newAccessToken = extractToken(response.headers["authorization"]);
+          getMember(newAccessToken, setCurrentUser).then(() => {
+            navigate("/home");
+          });
+        } 
+      } catch (error) {
+        console.log(error);
+      }
     }
-  }, [currentUser]);
+
+    checkLoggedIn();
+  }, []);
 
   return (
     <div>

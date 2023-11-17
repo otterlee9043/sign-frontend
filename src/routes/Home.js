@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { authApiInstance } from "../utils/api";
-import { Link, useNavigate  } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 
@@ -11,24 +11,20 @@ import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import theme from "../utils/theme";
 import styles from "./Home.module.css";
 
-
 function Home() {
   const navigate = useNavigate();
   const { currentUser } = useContext(CurrentUserContext);
   const [rooms, setRooms] = useState(null);
-  
+
   useEffect(() => {
     if (currentUser === null) {
       navigate("/");
     }
-    
+
     async function getRooms() {
       try {
-        const response = await authApiInstance.get(`/member/${currentUser.id}/classrooms`,
-        {
-          headers: {
-            Authorization: `Bearer ${currentUser.accessToken}`
-          }
+        const response = await authApiInstance.get(`/member/${currentUser.id}/classrooms`, {
+          headers: { Authorization: `Bearer ${currentUser.accessToken}` },
         });
         const roomsJson = response.data;
         setRooms(roomsJson);

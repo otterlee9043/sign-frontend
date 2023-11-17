@@ -1,57 +1,70 @@
 import { useContext } from "react";
-import axios from 'axios'
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import { extractToken } from "./tokenUtils";
 
-
 export const axiosInstance = axios.create({
-    baseURL: process.env.REACT_APP_API_BASE_URL,
-    withCredentials: true
+  baseURL: process.env.REACT_APP_API_BASE_URL,
+  withCredentials: true,
 });
 
 export const apiInstance = axios.create({
-    baseURL: process.env.REACT_APP_API_URL,
-    withCredentials: true
+  baseURL: process.env.REACT_APP_API_URL,
+  withCredentials: true,
 });
 
 export const authApiInstance = axios.create({
-    baseURL: process.env.REACT_APP_API_URL,
-    withCredentials: true
+  baseURL: process.env.REACT_APP_API_URL,
+  withCredentials: true,
 });
 
 function AuthInterceptor() {
-    const { setCurrentUser } = useContext(CurrentUserContext);
-    const navigate = useNavigate();
+  const { setCurrentUser } = useContext(CurrentUserContext);
+  const navigate = useNavigate();
 
-    authApiInstance.interceptors.response.use(
-        function (response) {
-            return response;
-        },
-        async function (error) {
-            if (error.response.status === 401) {
-                try {
-                    const tokenResponse = await authApiInstance.post('/refresh/access-token');
-                    const newAccessToken = extractToken(tokenResponse.headers["authorization"]);
-                    setCurrentUser((currentUser) => ({ 
-                        ...currentUser, 
-                        accessToken: newAccessToken
-                    }));
+  authApiInstance.interceptors.response.use(
+    function (response) {
+      return response;
+    },
+    async function (error) {
+      if (error.response.status === 401) {
+        console.log("authApiInstance 401");
+        try {
+          const tokenResponse = await authApiInstance.post("/refresh/access-token");
+          const newAccessToken = extractToken(tokenResponse.headers["authorization"]);
+          setCurrentUser((currentUser) => ({
+            ...currentUser,
+            accessToken: newAccessToken,
+          }));
 
-                    const updatedConfig = { ...error.config };
-                    updatedConfig.headers.Authorization = `Bearer ${newAccessToken}`;
-                    const secondResponse = await authApiInstance(updatedConfig);
-                    return secondResponse;
-                } catch (refreshError) {
-                    navigate("/login");
-                }
-            }
-            return error;
+          const updatedConfig = { ...error.config };
+          updatedConfig.headers.Authorization = `Bearer ${newAccessToken}`;
+          const secondResponse = await authApiInstance(updatedConfig);
+          return secondResponse;
+        } catch (refreshError) {
+          navigate("/login");
         }
-    );
+      }
+      return error;
+    }
+  );
 
-    return null;
+  return null;
+}
+
+export async function getMember(accessToken, setCurrentUser) {
+  console.log("geMembet");
+    try {
+    const userResponse = await authApiInstance.get("/member", {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    const userInfo = userResponse.data;
+    setCurrentUser({ ...userInfo, accessToken: accessToken });
+  } catch (error) {
+    console.error("There has been an error getMember", error);
+  }
 }
 
 export default AuthInterceptor;

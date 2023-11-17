@@ -10,7 +10,6 @@ import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import button_styles from "../components/Button.module.css";
 import styles from "./RoomForm.module.css";
 
-
 function CreateRoom() {
   const { currentUser } = useContext(CurrentUserContext);
   const [name, setName] = useState("");
@@ -33,9 +32,7 @@ function CreateRoom() {
   const createRoom = async (values) => {
     try {
       await authApiInstance.post("/classrooms", values, {
-        headers: {
-          Authorization: `Bearer ${currentUser.accessToken}`
-        }
+        headers: { Authorization: `Bearer ${currentUser.accessToken}` },
       });
       navigate("/home");
     } catch (error) {

@@ -11,7 +11,6 @@ import Button from "@mui/material/Button";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import styles from "./RoomForm.module.css";
 
-
 function EnterRoom() {
   const { currentUser } = useContext(CurrentUserContext);
   const [roomCode, setRoomcode] = useState("");
@@ -21,13 +20,11 @@ function EnterRoom() {
 
   const findRoomByRoomcode = async () => {
     try {
-      const response = await authApiInstance.get(`/classrooms`, 
-      { params: { code: roomCode } },
-      {
-        headers: {
-          Authorization: `Bearer ${currentUser.accessToken}`
-        }
-      });
+      const response = await authApiInstance.get(
+        `/classrooms`,
+        { params: { code: roomCode } },
+        { headers: { Authorization: `Bearer ${currentUser.accessToken}` } }
+      );
       const result = response.data;
       setErrorMessage(null);
       setFoundRoom(result);
@@ -42,11 +39,8 @@ function EnterRoom() {
 
   const enterRoom = async () => {
     try {
-      await authApiInstance.put(`/member/${currentUser.id}/classroom/${foundRoom["id"]}`,
-      {
-        headers: {
-          Authorization: `Bearer ${currentUser.accessToken}`
-        }
+      await authApiInstance.put(`/member/${currentUser.id}/classroom/${foundRoom["id"]}`, {
+        headers: { Authorization: `Bearer ${currentUser.accessToken}` },
       });
       navigate("/home");
     } catch (error) {

@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { authApiInstance } from "../utils/api";
+import { authApiInstance, axiosInstance } from "../utils/api";
 
 import NavBar from "../components/NavBar.js";
 
@@ -13,11 +13,8 @@ function MyPage() {
   const navigate = useNavigate();
   const logout = async () => {
     try {
-      await authApiInstance.post("/logout",
-      {
-        headers: {
-          Authorization: `Bearer ${currentUser.accessToken}`
-        }
+      await axiosInstance.post("/logout", null, {
+        headers: { Authorization: `Bearer ${currentUser.accessToken}` }
       });
       setCurrentUser(null);
       navigate("/");
@@ -28,15 +25,11 @@ function MyPage() {
 
   const unregister = async () => {
     try {
-      await authApiInstance.post("/logout", {
-        headers: {
-          Authorization: `Bearer ${currentUser.accessToken}`
-        }
+      await axiosInstance.post("/logout", {
+        headers: { Authorization: `Bearer ${currentUser.accessToken}` }
       });
-      await authApiInstance.delete(`/member`, {
-        headers: {
-          Authorization: `Bearer ${currentUser.accessToken}`
-        }
+      await authApiInstance.delete("/member", {
+        headers: { Authorization: `Bearer ${currentUser.accessToken}` }
       });
       setCurrentUser(null);
       navigate("/");

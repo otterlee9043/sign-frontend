@@ -20,11 +20,8 @@ export const validationSchema = (hasChange, validationResult, currentUser) =>
       if (hasChange.current) {
         if (await roomCodeSchema.isValid(code)) {
           try {
-            await authApiInstance.get(`/classrooms/code/${code}/duplication`,
-            {
-              headers: {
-                Authorization: `Bearer ${currentUser.accessToken}`
-              }
+            await authApiInstance.get(`/classrooms/code/${code}/duplication`, {
+              headers: { Authorization: `Bearer ${currentUser.accessToken}` }
             });
             validationResult.current = true;
             return true;

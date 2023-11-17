@@ -30,14 +30,10 @@ function UpdateRoom({}) {
   const updateRoomName = async (values) => {
     if (roomInfo.roomName !== values.roomName) {
       try {
-        await authApiInstance.put(`/classroom/${roomInfo.id}`, {
-          roomName: values.roomName,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${currentUser.accessToken}`
-          }
-        });
+        await authApiInstance.put(`/classroom/${roomInfo.id}`, 
+          { roomName: values.roomName },
+          { headers: { Authorization: `Bearer ${currentUser.accessToken}` }}
+        );
         navigate("/home");
       } catch (error) {
         console.error("There has been an error", error);
@@ -114,11 +110,8 @@ function ConfirmMessage({ roomId, visible, setVisible }) {
   };
   const deleteRoom = async () => {
     try {
-      await authApiInstance.delete(`/classroom/${roomId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${currentUser.accessToken}`
-        }
+      await authApiInstance.delete(`/classroom/${roomId}`, {
+        headers: { Authorization: `Bearer ${currentUser.accessToken}` }
       });
       navigate("/home");
     } catch (error) {

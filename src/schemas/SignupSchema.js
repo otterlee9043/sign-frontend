@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { authApiInstance } from "../utils/api";
+import { apiInstance, authApiInstance } from "../utils/api";
 
 const usernameSchema = Yup.string()
   .required("이름을 입력하세요.")
@@ -24,13 +24,9 @@ export const validationSchema = (hasChange, validationResult, currentUser) =>
     email: emailSchema.test("email", "사용 중인 이메일입니다.", async (email) => {
       if (hasChange.current) {
         if (await emailSchema.isValid(email)) {
+          console.log("email valid");
           try {
-            await authApiInstance.get(`/members/email/${email}/duplication`,
-            {
-              headers: {
-                Authorization: `Bearer ${currentUser.accessToken}`
-              }
-            });
+            await apiInstance.get(`/members/email/${email}/duplication`);
             validationResult.current = true;
             return true;
           } catch (error) {
