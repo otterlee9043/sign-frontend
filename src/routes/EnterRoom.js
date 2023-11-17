@@ -25,15 +25,17 @@ function EnterRoom() {
         { params: { code: roomCode } },
         { headers: { Authorization: `Bearer ${currentUser.accessToken}` } }
       );
-      const result = response.data;
-      setErrorMessage(null);
-      setFoundRoom(result);
-    } catch (error) {
-      setFoundRoom(null);
-      if (error.response && error.response.status === 404) {
-        const result = error.response.data;
-        setErrorMessage(result["message"]);
+      if (response.response && response.response.status === 404) {
+        setFoundRoom(null);
+        setErrorMessage(response.response.data["message"]);
+        
+      } else {
+        setFoundRoom(response.data);
+        setErrorMessage(null);
       }
+    } catch (error) {
+      console.log(error);
+      setFoundRoom(null);
     }
   };
 
@@ -44,6 +46,7 @@ function EnterRoom() {
       });
       navigate("/home");
     } catch (error) {
+      
       if (error.response && error.response.status === 409) {
         setErrorMessage(error.response.data["message"]);
       } else {
