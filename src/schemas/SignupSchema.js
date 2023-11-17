@@ -24,7 +24,6 @@ export const validationSchema = (hasChange, validationResult, currentUser) =>
     email: emailSchema.test("email", "사용 중인 이메일입니다.", async (email) => {
       if (hasChange.current) {
         if (await emailSchema.isValid(email)) {
-          console.log("email valid");
           try {
             await apiInstance.get(`/members/email/${email}/duplication`);
             validationResult.current = true;

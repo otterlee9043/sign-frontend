@@ -30,7 +30,6 @@ function AuthInterceptor() {
     },
     async function (error) {
       if (error.response.status === 401) {
-        console.log("authApiInstance 401");
         try {
           const tokenResponse = await authApiInstance.post("/refresh/access-token");
           const newAccessToken = extractToken(tokenResponse.headers["authorization"]);
@@ -55,8 +54,7 @@ function AuthInterceptor() {
 }
 
 export async function getMember(accessToken, setCurrentUser) {
-  console.log("geMembet");
-    try {
+  try {
     const userResponse = await authApiInstance.get("/member", {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
